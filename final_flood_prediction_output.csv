@@ -1,0 +1,11 @@
+Date,Rainfall,Elevation,Flood,Flood_Probability,Risk_Level
+1,1,1,0,0.07,Low
+2,2,2,1,0.07,Low
+3,3,3,0,0.26,Low
+4,4,4,1,0.65,Medium
+5,5,5,0,0.27,Low
+6,6,6,1,0.695,Medium
+7,7,7,0,0.335,Medium
+8,8,8,1,0.79,High
+9,9,9,0,0.92,High
+10,10,10,1,0.92,High
