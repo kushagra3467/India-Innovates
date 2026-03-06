@@ -8,6 +8,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
+from typing import Optional
 
 st.set_page_config(page_title="AI Flood Prediction Dashboard", layout="wide")
 st.title("🚀 AI Flood Prediction Dashboard with Control & Suggestions")
@@ -68,6 +69,18 @@ if uploaded_file:
     new_data["Control_Tips"] = new_data["Flood_Probability"].apply(mitigation_tips)
 
     # -------------------------------
+    # Helper: detect district column
+    # -------------------------------
+    def get_district_column(df: pd.DataFrame) -> Optional[str]:
+        possible_names = ["DISTRICT", "District", "district"]
+        for name in possible_names:
+            if name in df.columns:
+                return name
+        return None
+
+    district_col = get_district_column(new_data)
+
+    # -------------------------------
     # Display Recommendations & Controls
     # -------------------------------
     st.subheader("Recommended Actions & Control Measures")
@@ -107,6 +120,48 @@ if uploaded_file:
         ward_score["Readiness_Score"] = (1 - ward_score["Flood_Probability"]) * 100
         st.subheader("Ward-wise Readiness Score")
         st.dataframe(ward_score)
+
+    # -------------------------------
+    # District-wise Rainfall & Flood Summary
+    # -------------------------------
+    if district_col is not None:
+        st.subheader("District-wise Rainfall & Flood Summary")
+
+        agg_dict = {
+            "Flood_Probability": ["mean", "max"]
+        }
+        if "Rainfall" in new_data.columns:
+            agg_dict["Rainfall"] = ["mean", "max"]
+
+        district_summary = (
+            new_data.groupby(district_col)
+            .agg(agg_dict)
+        )
+
+        # Flatten MultiIndex columns
+        district_summary.columns = [
+            "_".join([c for c in col if c]).strip("_")
+            for col in district_summary.columns.to_flat_index()
+        ]
+        district_summary = district_summary.reset_index()
+
+        if "Risk_Level" in new_data.columns:
+            mode_risk = (
+                new_data.groupby(district_col)["Risk_Level"]
+                .agg(lambda s: s.mode().iat[0] if not s.mode().empty else None)
+                .reset_index()
+                .rename(columns={"Risk_Level": "Dominant_Risk_Level"})
+            )
+            district_summary = district_summary.merge(mode_risk, on=district_col, how="left")
+
+        st.dataframe(district_summary)
+
+        st.download_button(
+            label="Download District-wise Summary as CSV",
+            data=district_summary.to_csv(index=False).encode("utf-8"),
+            file_name="district_flood_rainfall_summary.csv",
+            mime="text/csv",
+        )
 
     # -------------------------------
     # Filter by Risk Level
