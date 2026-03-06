@@ -14,6 +14,35 @@ st.set_page_config(page_title="AI Flood Prediction Dashboard", layout="wide")
 st.title("🚀 AI Flood Prediction Dashboard with Control & Suggestions")
 
 # -------------------------------
+# Basic styling
+# -------------------------------
+st.markdown(
+    """
+    <style>
+    .main {
+        background: linear-gradient(135deg, #0f172a 0%, #020617 40%, #0b1120 100%);
+        color: #e5e7eb;
+    }
+    .stApp {
+        background-color: transparent;
+    }
+    .section-card {
+        background-color: rgba(15,23,42,0.85);
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.9rem;
+        border: 1px solid #1e293b;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+        margin-bottom: 1.5rem;
+    }
+    .section-card h3 {
+        margin-top: 0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# -------------------------------
 # Load model & scaler
 # -------------------------------
 model = joblib.load("flood_model.pkl")
@@ -48,25 +77,53 @@ if uploaded_file:
     # -------------------------------
     def flood_advice(prob):
         if prob < 0.3:
-            return "Low risk – Normal monitoring"
+            return "Situation: Normal.\nAction: Keep routine monitoring and maintain drainage; no special measures needed."
         elif prob < 0.7:
-            return "Medium risk – Prepare sandbags and review drainage"
+            return "Situation: Alert.\nAction: Put teams on standby, check vulnerable locations, and prepare sandbags and pumps."
         else:
-            return "High risk – Evacuation plan, deploy emergency teams"
+            return "Situation: Emergency likely.\nAction: Activate flood response plan, warn communities, and be ready to evacuate."
 
     # -------------------------------
     # Mitigation / Control Suggestions
     # -------------------------------
     def mitigation_tips(prob):
         if prob < 0.3:
-            return "Keep drains clear, monitor rainfall"
+            return (
+                "Before flood: keep drains and culverts clear, protect natural water channels.\n"
+                "During heavy rain: monitor water levels at low spots, log any waterlogging.\n"
+                "After events: inspect and repair minor damages to roads and embankments."
+            )
         elif prob < 0.7:
-            return "Temporary sandbags, inspect drainage, alert community"
+            return (
+                "Before flood: pre-position sandbags and mobile pumps at known hotspots, test sirens and communication channels.\n"
+                "During heavy rain: deploy field teams to monitor critical locations, issue local alerts to at‑risk communities.\n"
+                "After flood: assess damage, clear debris from drains, and update risk maps using observed flood extents."
+            )
         else:
-            return "Evacuate low-lying areas, deploy pumps, alert hospitals, restrict traffic"
+            return (
+                "Before flood: confirm evacuation routes and shelters, move vulnerable people (elderly, hospitals) out of high‑risk zones.\n"
+                "During flood: evacuate low‑lying areas, close unsafe roads, deploy rescue teams, pumps and boats; keep hospitals and power stations protected.\n"
+                "After flood: run health camps, restore drinking water and sanitation, and plan medium‑term works (embankments, retention ponds, wetland restoration)."
+            )
 
     new_data["Suggestion"] = new_data["Flood_Probability"].apply(flood_advice)
     new_data["Control_Tips"] = new_data["Flood_Probability"].apply(mitigation_tips)
+
+    # -------------------------------
+    # At-a-glance overview metrics
+    # -------------------------------
+    total_areas = len(new_data)
+    avg_prob = float(new_data["Flood_Probability"].mean())
+    high_risk_count = int((new_data["Risk_Level"] == "High").sum())
+
+    with st.container():
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.subheader("Overview")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total records", f"{total_areas}")
+        col2.metric("Average flood probability", f"{avg_prob:.2f}")
+        col3.metric("High-risk locations", f"{high_risk_count}")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # -------------------------------
     # Helper: detect district column
@@ -83,34 +140,39 @@ if uploaded_file:
     # -------------------------------
     # Display Recommendations & Controls
     # -------------------------------
-    st.subheader("Recommended Actions & Control Measures")
-    display_cols = ["Ward","Flood_Probability","Risk_Level","Suggestion","Control_Tips"]
-    display_cols = [col for col in display_cols if col in new_data.columns]
-    st.dataframe(new_data[display_cols])
+    with st.container():
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.subheader("Recommended Actions & Control Measures")
+        display_cols = ["Ward","Flood_Probability","Risk_Level","Suggestion","Control_Tips"]
+        display_cols = [col for col in display_cols if col in new_data.columns]
+        st.dataframe(new_data[display_cols])
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # -------------------------------
     # High Risk Alert
     # -------------------------------
-    high_risk_count = (new_data["Flood_Probability"] > 0.7).sum()
     if high_risk_count > 0:
         st.warning(f"⚠️ {high_risk_count} areas are at HIGH risk!")
 
     # -------------------------------
     # Charts
     # -------------------------------
-    st.subheader("Flood Probability Distribution")
-    fig, ax = plt.subplots()
-    ax.hist(new_data["Flood_Probability"], bins=10, color='skyblue', edgecolor='black')
-    ax.set_xlabel("Flood Probability")
-    ax.set_ylabel("Count")
-    st.pyplot(fig)
+    with st.container():
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.subheader("Flood Probability Distribution")
+        fig, ax = plt.subplots()
+        ax.hist(new_data["Flood_Probability"], bins=10, color='#38bdf8', edgecolor='black')
+        ax.set_xlabel("Flood Probability")
+        ax.set_ylabel("Count")
+        st.pyplot(fig)
 
-    st.subheader("Risk Level Distribution")
-    fig2, ax2 = plt.subplots()
-    new_data["Risk_Level"].value_counts().plot(kind="bar", ax=ax2, color='salmon')
-    ax2.set_xlabel("Risk Level")
-    ax2.set_ylabel("Count")
-    st.pyplot(fig2)
+        st.subheader("Risk Level Distribution")
+        fig2, ax2 = plt.subplots()
+        new_data["Risk_Level"].value_counts().plot(kind="bar", ax=ax2, color='#fb7185')
+        ax2.set_xlabel("Risk Level")
+        ax2.set_ylabel("Count")
+        st.pyplot(fig2)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # -------------------------------
     # Ward Readiness Score
@@ -153,6 +215,33 @@ if uploaded_file:
                 .rename(columns={"Risk_Level": "Dominant_Risk_Level"})
             )
             district_summary = district_summary.merge(mode_risk, on=district_col, how="left")
+
+            # Add district-level suggestion text based on dominant risk
+            def district_suggestion(level: str) -> str:
+                if level == "Low":
+                    return (
+                        "Overall situation: generally safe.\n"
+                        "District actions: keep drains and natural channels clear, maintain gauges and warning systems, "
+                        "and regularly review local low‑lying pockets for waterlogging."
+                    )
+                if level == "Medium":
+                    return (
+                        "Overall situation: watch and prepare.\n"
+                        "District actions: desilt major drains before monsoon, pre‑position sandbags and pumps at hotspots, "
+                        "conduct community awareness drives and mock drills in flood‑prone villages/wards."
+                    )
+                if level == "High":
+                    return (
+                        "Overall situation: high flood risk.\n"
+                        "District actions: finalize and test evacuation plans, protect critical infrastructure (hospitals, power, water works), "
+                        "identify safe shelters and stock them, and enforce controls on new construction in flood‑prone areas."
+                    )
+                return (
+                    "Overall situation: unclear from data.\n"
+                    "District actions: verify local flood history, check gauge and rainfall data quality, and update exposure maps."
+                )
+
+            district_summary["District_Suggestion"] = district_summary["Dominant_Risk_Level"].apply(district_suggestion)
 
         st.dataframe(district_summary)
 

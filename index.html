@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Flood Risk & Rainfall Explorer</title>
+    <link rel="stylesheet" href="static/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <span class="brand-mark">AI</span>
+          <span class="brand-text">Flood Insight</span>
+        </div>
+        <nav class="nav-links">
+          <a href="#about">About</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <h1>District-wise Flood Risk, Reimagined.</h1>
+            <p>
+              Explore rainfall patterns, forecast flood probability, and get
+              clear, actionable suggestions for every district – powered by
+              machine learning.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="http://localhost:8501" target="_blank" rel="noreferrer">
+                Open Live Dashboard
+              </a>
+              <a class="btn btn-ghost" href="#how-it-works">
+                Learn how it works
+              </a>
+            </div>
+            <div class="hero-metrics">
+              <div class="metric">
+                <div class="metric-label">Coverage</div>
+                <div class="metric-value">640+ districts</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Data sources</div>
+                <div class="metric-value">Rainfall & elevation</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Insights</div>
+                <div class="metric-value">Risk & suggestions</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-card">
+            <h2>What you get</h2>
+            <ul>
+              <li>District-wise rainfall & monsoon statistics</li>
+              <li>AI-predicted flood probability and risk level</li>
+              <li>Situation-based control and mitigation tips</li>
+              <li>Downloadable CSVs for further analysis</li>
+            </ul>
+            <p class="hero-note">
+              Tip: keep the Streamlit app running with
+              <code>python -m streamlit run app.py</code> to power the
+              dashboard.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section">
+        <div class="container two-column">
+          <div>
+            <h2>Built for planners and responders</h2>
+            <p>
+              This tool combines historical district-wise rainfall data with a
+              machine learning model of flood occurrence. It is designed to help
+              district administration, disaster management teams, and researchers
+              quickly understand which areas are at higher risk, and why.
+            </p>
+          </div>
+          <div class="pill-grid">
+            <span class="pill">Flood early warning</span>
+            <span class="pill">Monsoon planning</span>
+            <span class="pill">Disaster management</span>
+            <span class="pill">Climate resilience</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="section section-alt">
+        <div class="container">
+          <h2>How it works</h2>
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <h3>Upload rainfall & elevation data</h3>
+              <p>
+                Start from the curated district rainfall dataset or your own
+                Excel file containing rainfall, elevation, and district
+                information.
+              </p>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <h3>AI model predicts flood risk</h3>
+              <p>
+                A trained Random Forest model estimates flood probability based
+                on rainfall and elevation, then categorises each row into Low,
+                Medium, or High risk.
+              </p>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <h3>District-wise insight & suggestions</h3>
+              <p>
+                The app aggregates results by district, showing rainfall
+                statistics, risk levels, and tailored suggestions for
+                before, during, and after flood situations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="section">
+        <div class="container two-column">
+          <div>
+            <h2>Interactive dashboard</h2>
+            <p>
+              The Streamlit dashboard lets you filter by risk level, visualise
+              probability distributions, and download both full predictions and
+              district summaries as CSV files.
+            </p>
+            <ul class="feature-list">
+              <li>Filter by Low / Medium / High risk</li>
+              <li>See distribution of flood probability</li>
+              <li>Ward-wise readiness scores (where applicable)</li>
+              <li>District-wise rainfall and risk summary with suggestions</li>
+            </ul>
+            <a class="btn btn-primary" href="http://localhost:8501" target="_blank" rel="noreferrer">
+              Go to live dashboard
+            </a>
+          </div>
+          <div class="dashboard-placeholder">
+            <div class="browser-frame">
+              <div class="browser-header">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="browser-body">
+                <div class="chart-skeleton"></div>
+                <div class="chart-skeleton small"></div>
+                <div class="table-skeleton"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="section section-alt">
+        <div class="container">
+          <h2>Using this in your district?</h2>
+          <p>
+            Integrate this dashboard into your workflow, plug in updated
+            rainfall and elevation datasets, or extend the model with additional
+            features such as soil type, river levels, or land use.
+          </p>
+          <p class="small">
+            This is a prototype research tool and should be used alongside local
+            expertise, official forecasts, and on-the-ground information.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span>© 2026 AI Flood Insight · India Innovates</span>
+        <span class="footer-right">
+          Built with Python, Streamlit & district rainfall data
+        </span>
+      </div>
+    </footer>
+  </body>
+  </html>
+
